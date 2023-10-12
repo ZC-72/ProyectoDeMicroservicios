@@ -1,0 +1,35 @@
+services:
+  stackupPostgres:
+    restart: always
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=stackup_postgress
+
+  pgadmin:
+    image: dpage/pgadmin4:7.7
+    container_name: pgadmin4_container
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - "127.0.0.1:8009:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+  api-gateway:
+    ports:
+      - "127.0.0.1:3500:80"
+
+  identity-api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings__WebApiDatabase=host=stackupPostgres;Port=5432;Database=stackup_postgress;User Id=admin;Password=admin;"
+
+volumes:
+  stackup_postgres_data:
+  pgadmin-data:
