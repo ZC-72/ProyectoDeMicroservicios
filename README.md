@@ -50,8 +50,8 @@ Funcionalidades en un futuro cercano:
 - Lista de favoritos
 
 # Autores
-- [Damitelli](https://github.com/damitelli)
 - [ZC-72](https://github.com/zc-72)
+- [Damitelli](https://github.com/damitelli)
 
 # Licencia
-Puedes leer más en el archivo [license.md](https://github.com/damitelli/ProyectoDeMicroservicios/blob/main/LICENSE)
+Puedes leer más en el archivo [license.md](https://github.com/ZC-72/ProyectoDeMicroservicios/blob/main/LICENSE)
