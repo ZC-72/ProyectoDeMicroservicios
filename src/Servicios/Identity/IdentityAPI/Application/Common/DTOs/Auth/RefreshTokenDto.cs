@@ -1,6 +1,6 @@
 namespace Application.Common.DTOs.Auth;
 
-public class RefreshTokenDto
+public class RefreshTokenDTO
 {
     public string Token { get; set; }
     public DateTime Expires { get; set; }

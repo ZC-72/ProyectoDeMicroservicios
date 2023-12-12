@@ -1,11 +1,8 @@
-using Application.Common.DTOs.Auth;
-using FluentValidation;
-
 namespace Application.Common.Validators.Auth;
 
-public class RegisterUserDtoValidator : AbstractValidator<RegisterUserRequest>
+public class RegisterUserDTOValidator : AbstractValidator<RegisterUserRequest>
 {
-    public RegisterUserDtoValidator()
+    public RegisterUserDTOValidator()
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 

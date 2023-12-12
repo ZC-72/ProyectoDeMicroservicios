@@ -1,6 +1,5 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Application.Common.DTOs.Auth;
+
 public class RegisterUserRequest
 {
     [Required(ErrorMessage = "El Nombre es requerido.")]

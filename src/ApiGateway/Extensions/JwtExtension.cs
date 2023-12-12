@@ -1,12 +1,16 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ApiGateway.Extensions;
+
 public static class JwtExtension
 {
-    public const string SecurityKey = "SecuenciaDeCaracteresSecretos";
-    public static void AddJwtAuthentication(this IServiceCollection services)
+    private const string validIssuer = "identity-microservice";
+    private const string validAudience = "identity-microservice-audience";
+    private const string secretKey = "SecuenciaDeCaracteresSecretos";
+
+    public static void AddJWTConfig(this IServiceCollection services)
     {
         services.AddAuthentication(opt =>
         {
@@ -18,10 +22,13 @@ public static class JwtExtension
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
-                ValidIssuer = "identity-microservice",
-                ValidateAudience = false,
+                ValidateAudience = true,
+                ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecurityKey))
+                ValidIssuer = validIssuer,
+                ValidAudience = validAudience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+                ClockSkew = TimeSpan.Zero
             };
         });
     }

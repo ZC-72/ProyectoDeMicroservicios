@@ -1,6 +1,6 @@
 using Application.Extensions;
+using Application.Middlewares;
 using Infrastructure.Extensions;
-using PublicAPI.CustomExceptionMiddleware;
 
 var builder = WebApplication.CreateBuilder(args);
 

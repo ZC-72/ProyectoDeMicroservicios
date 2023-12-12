@@ -1,8 +1,3 @@
-using Application.Common.Interfaces;
-using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-
 namespace Infrastructure.Services;
 
 internal sealed class UserService : IUserService

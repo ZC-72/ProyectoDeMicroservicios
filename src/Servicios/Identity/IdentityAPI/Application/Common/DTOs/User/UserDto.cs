@@ -1,6 +1,6 @@
 namespace Application.Common.DTOs.User;
 
-public class UserDto
+public class UserDTO
 {
     public string? Id { get; set; }
     public string FirstName { get; set; }

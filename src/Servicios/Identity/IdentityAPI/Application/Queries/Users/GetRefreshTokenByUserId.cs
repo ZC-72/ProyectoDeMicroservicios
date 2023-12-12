@@ -1,16 +1,9 @@
-using Application.Common.DTOs.Auth;
-using Application.Common.Interfaces;
-using Application.Common.Models;
-using Application.Common.Wrappers;
-using AutoMapper;
-using Domain.Exceptions;
-
 namespace Application.Queries.Users;
 
-public record GetRefreshTokenByUserIdQuery(string userId) : IRequestWrapper<IReadOnlyList<RefreshTokenDto>>;
+public record GetRefreshTokenByUserIdQuery(string userId) : IRequestWrapper<IReadOnlyList<RefreshTokenDTO>>;
 
 internal sealed class GetRefreshTokenByUserIdQueryHandler :
-IHandlerWrapper<GetRefreshTokenByUserIdQuery, IReadOnlyList<RefreshTokenDto>>
+IHandlerWrapper<GetRefreshTokenByUserIdQuery, IReadOnlyList<RefreshTokenDTO>>
 {
     private readonly IUserService _userService;
     private readonly IMapper _mapper;
@@ -21,13 +14,14 @@ IHandlerWrapper<GetRefreshTokenByUserIdQuery, IReadOnlyList<RefreshTokenDto>>
         _mapper = mapper;
     }
 
-    public async Task<IResponse<IReadOnlyList<RefreshTokenDto>>> Handle(
+    public async Task<IApiResponse<IReadOnlyList<RefreshTokenDTO>>> Handle(
         GetRefreshTokenByUserIdQuery request,
         CancellationToken cancellationToken)
     {
         var user = await _userService.GetUserByIdAsync(request.userId) ??
         throw new UserNotFoundException(request.userId);
 
-        return Response.Success(_mapper.Map<IReadOnlyList<RefreshTokenDto>>(user.RefreshTokens));
+        return new ApiResponse<IReadOnlyList<RefreshTokenDTO>>(
+            _mapper.Map<IReadOnlyList<RefreshTokenDTO>>(user.RefreshTokens));
     }
 }

@@ -1,14 +1,3 @@
-using Application.Common.Behaviours;
-using Application.Common.Mappings;
-using Application.Common.Validators.Auth;
-using Application.Common.Validators.Users;
-using AutoMapper;
-using FluentValidation;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
-
 namespace Application.Extensions;
 
 public static class ServiceCollectionExtension
@@ -16,13 +5,17 @@ public static class ServiceCollectionExtension
     public static void AddApplication(this IServiceCollection services)
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly));
-        services.AddValidatorsFromAssemblyContaining<RegisterUserDtoValidator>();
-        services.AddValidatorsFromAssemblyContaining<LoginUserDtoValidator>();
-        services.AddValidatorsFromAssemblyContaining<UpdateUserInfoDtoValidator>();
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
+        services.AddValidatorsFromAssemblyContaining<RegisterUserDTOValidator>();
+        services.AddValidatorsFromAssemblyContaining<LoginUserDTOValidator>();
+        services.AddValidatorsFromAssemblyContaining<UpdateUserInfoDTOValidator>();
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TaskCanceledExceptionBehaviour<,>));
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
+
+
+        //Configura Logger
+        services.AddScoped<ILoggerService, LoggerService>();
+        var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
+        logger.Debug("IdentityAPI init main");
 
 
         //Configura mappings
@@ -39,7 +32,7 @@ public static class ServiceCollectionExtension
         //Configura Swagger
         services.AddSwaggerGen(option =>
         {
-            option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+            option.SwaggerDoc("v1", new OpenApiInfo { Title = "Identity API", Version = "v1" });
             option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,

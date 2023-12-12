@@ -1,15 +1,23 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /App
 
-# Copy everything
-COPY . ./
-# Restore as distinct layers
-RUN dotnet restore
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+
+WORKDIR /src
+
+COPY "Servicios/Identity/IdentityAPI" "Servicios/Identity/IdentityAPI"
+
+COPY "Servicios/Services.Common" "Servicios/Services.Common"
+
+RUN dotnet restore "Servicios/Identity/IdentityAPI/IdentityAPI.sln"
+
+WORKDIR /src/Servicios/Identity/IdentityAPI
 # Build and publish a release
-RUN dotnet publish -c Release -o out
+RUN dotnet publish --no-restore -c Release -o /App
 
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM build AS publish
+
+FROM base AS final
 WORKDIR /App
-COPY --from=build-env /App/out .
+COPY --from=publish /App .
 ENTRYPOINT ["dotnet", "PublicAPI.dll"]

@@ -1,31 +1,12 @@
-using Application.Common.Interfaces;
-using Domain.Entities;
-using Infrastructure.Persistence;
-using Infrastructure.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using NLog;
-using System.Text;
-
 namespace Infrastructure.Extensions;
 
 public static class ServiceCollectionExtension
 {
     public static void AddInfraestructure(this IServiceCollection services, IConfiguration configuration)
     {
-        //Configura Logger
-        services.AddScoped<ILoggerManager, LoggerManager>();
-        LogManager.Setup().LoadConfigurationFromFile(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
-        _ = new LoggerManager();
-
-
         //Configura PostgreSQLContext
         services.AddDbContextPool<ApplicationDbContext>(opts =>
-                opts.UseNpgsql(configuration.GetConnectionString("WebApiDatabase")));
+                opts.UseNpgsql(configuration.GetConnectionString("IdentityApiDatabase")));
 
 
         //Configura Servicios

@@ -1,13 +1,3 @@
-using Application.Common.DTOs.User;
-using Application.Common.Interfaces;
-using Application.Common.Models;
-using Application.Commands.Users;
-using Application.Queries.Users;
-using FluentValidation;
-using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
 namespace PublicAPI.Controllers;
 
 [Route("v1/users")]
@@ -17,7 +7,7 @@ public class UsersController : BaseApiController
     private readonly IValidator<UpdateUserInfoRequest> _updateValidator;
     public UsersController(
         IMediator mediator,
-        ILoggerManager logger,
+        ILoggerService logger,
         IValidator<UpdateUserInfoRequest> updateValidator) : base(mediator, logger) =>
             _updateValidator = updateValidator;
 
@@ -32,7 +22,7 @@ public class UsersController : BaseApiController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Produces("application/json")]
     [Consumes("application/json")]
-    public async Task<ActionResult<IResponse<IReadOnlyList<UserDto>>>> GetAllUsersAsync(
+    public async Task<ActionResult<IApiResponse<IReadOnlyList<UserDTO>>>> GetAllUsersAsync(
         CancellationToken cancellationToken = new()) =>
             Ok(await _mediator.Send(new GetAllUsersQuery(), cancellationToken));
 
@@ -78,7 +68,7 @@ public class UsersController : BaseApiController
     /// </summary>
     /// <param name="userId">El Id del usuario que debe actualizarse.</param>
     /// <param name="updatedInfo">Los datos presentes en la petición.</param>
-    [HttpPut("{userId}")]
+    [HttpPut("update/{userId}")]
     [Authorize(Roles = "SuperAdmin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -87,7 +77,7 @@ public class UsersController : BaseApiController
     [Consumes("application/json")]
     public async Task<IActionResult> UpdateUserAsync(
         string userId,
-        [FromBody] UpdateUserInfoRequest updatedInfo,
+        UpdateUserInfoRequest updatedInfo,
         CancellationToken cancellationToken = new())
     {
         var validationResult = await _updateValidator.ValidateAsync(updatedInfo, cancellationToken);
@@ -101,8 +91,11 @@ public class UsersController : BaseApiController
                 ));
 
         var result = await _mediator.Send(new UpdateUserInfoCommand(userId, updatedInfo), cancellationToken);
-        return !result.Data.Succeeded ?
-                BadRequest(result) :
-                Ok(new { message = "Usuario actualizado con éxito.", result });
+
+        if (!result.Succeeded)
+            return BadRequest(result);
+
+        result.Message = "Usuario actualizado con éxito.";
+        return Ok(result);
     }
 }

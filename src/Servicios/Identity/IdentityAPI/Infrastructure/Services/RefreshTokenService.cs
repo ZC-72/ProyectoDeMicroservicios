@@ -1,8 +1,3 @@
-using Application.Common.Interfaces;
-using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
-using System.Security.Cryptography;
-
 namespace Infrastructure.Services;
 
 internal sealed class RefreshTokenService : IRefreshTokenService

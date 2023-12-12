@@ -1,8 +1,3 @@
-using Application.Common.DTOs.Auth;
-using Application.Common.Interfaces;
-using Application.Common.Models;
-using Application.Common.Wrappers;
-
 namespace Application.Commands.Auth;
 
 public record LoginUserCommand(LoginUserRequest loginUserRequest) : IRequestWrapper<AuthenticateResponse>;
@@ -14,8 +9,8 @@ internal sealed class LoginUserCommandHandler : IHandlerWrapper<LoginUserCommand
     public LoginUserCommandHandler(IUserAuthenticationService userAuthService) =>
      _userAuthService = userAuthService;
 
-    public async Task<IResponse<AuthenticateResponse>> Handle(
+    public async Task<IApiResponse<AuthenticateResponse>> Handle(
         LoginUserCommand request,
         CancellationToken cancellationToken) =>
-            Response.Success(await _userAuthService.Authenticate(request));
+            new ApiResponse<AuthenticateResponse>(await _userAuthService.Authenticate(request));
 }

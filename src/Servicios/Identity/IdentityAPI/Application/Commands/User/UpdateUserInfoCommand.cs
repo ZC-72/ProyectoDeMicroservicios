@@ -1,10 +1,3 @@
-using Application.Common.DTOs.User;
-using Application.Common.Interfaces;
-using Application.Common.Models;
-using Application.Common.Wrappers;
-using Domain.Exceptions;
-using Microsoft.AspNetCore.Identity;
-
 namespace Application.Commands.Users;
 
 public record UpdateUserInfoCommand(string userId, UpdateUserInfoRequest updatedInfo) : IRequestWrapper<IdentityResult>;
@@ -16,7 +9,7 @@ internal sealed class UpdateUserInformationCommandHandler : IHandlerWrapper<Upda
     public UpdateUserInformationCommandHandler(IUserService userService) => _userService = userService;
 
 
-    public async Task<IResponse<IdentityResult>> Handle(UpdateUserInfoCommand request, CancellationToken cancellationToken)
+    public async Task<IApiResponse<IdentityResult>> Handle(UpdateUserInfoCommand request, CancellationToken cancellationToken)
     {
         var user = await _userService.GetUserByIdAsync(request.userId) ??
          throw new UserNotFoundException(request.userId);
@@ -33,6 +26,6 @@ internal sealed class UpdateUserInformationCommandHandler : IHandlerWrapper<Upda
         if (user.Email != request.updatedInfo.Email)
             user.Email = request.updatedInfo.Email;
 
-        return Response.Success(await _userService.UpdateUserAsync(user));
+        return new ApiResponse<IdentityResult>(await _userService.UpdateUserAsync(user));
     }
 }

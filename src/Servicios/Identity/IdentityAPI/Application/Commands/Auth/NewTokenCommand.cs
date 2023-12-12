@@ -1,7 +1,3 @@
-using Application.Common.Interfaces;
-using Application.Common.Models;
-using Application.Common.Wrappers;
-
 namespace Application.Commands.Auth;
 
 public record NewTokenCommand(string token) : IRequestWrapper<AuthenticateResponse>;
@@ -13,8 +9,8 @@ internal sealed class NewTokenCommandHandler : IHandlerWrapper<NewTokenCommand, 
     public NewTokenCommandHandler(IUserAuthenticationService userAuthService) =>
     _userAuthService = userAuthService;
 
-    public async Task<IResponse<AuthenticateResponse>> Handle(
+    public async Task<IApiResponse<AuthenticateResponse>> Handle(
         NewTokenCommand request,
         CancellationToken cancellationToken) =>
-            Response.Success(await _userAuthService.GenerateNewTokens(request));
+            new ApiResponse<AuthenticateResponse>(await _userAuthService.GenerateNewTokens(request));
 }

@@ -1,13 +1,3 @@
-using Application.Commands.Auth;
-using Application.Common.Interfaces;
-using Application.Common.Models;
-using AutoMapper;
-using Domain.Entities;
-using Domain.Exceptions;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-
 namespace Infrastructure.Services;
 
 internal sealed class UserAuthenticationService : IUserAuthenticationService
@@ -124,6 +114,7 @@ internal sealed class UserAuthenticationService : IUserAuthenticationService
 
         // Revoca tokens inhabilitándolos.
         RevokeRefreshToken(refreshToken, "Revocado sin reemplazo.");
+
         await _userManager.UpdateAsync(user);
         return Unit.Value;
     }

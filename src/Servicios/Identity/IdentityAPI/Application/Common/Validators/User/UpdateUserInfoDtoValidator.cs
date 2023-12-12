@@ -1,11 +1,8 @@
-using Application.Common.DTOs.User;
-using FluentValidation;
-
 namespace Application.Common.Validators.Users;
 
-public class UpdateUserInfoDtoValidator : AbstractValidator<UpdateUserInfoRequest>
+public class UpdateUserInfoDTOValidator : AbstractValidator<UpdateUserInfoRequest>
 {
-    public UpdateUserInfoDtoValidator()
+    public UpdateUserInfoDTOValidator()
     {
         RuleLevelCascadeMode = CascadeMode.Stop;
 

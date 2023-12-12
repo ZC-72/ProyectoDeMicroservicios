@@ -1,11 +1,3 @@
-using Application.Commands.Auth;
-using Application.Common.DTOs.Auth;
-using Application.Common.Interfaces;
-using Application.Common.Models;
-using FluentValidation;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-
 namespace PublicAPI.Controllers;
 
 [Route("v1/userauthentication")]
@@ -17,7 +9,7 @@ public class AuthController : BaseApiController
 
     public AuthController(
         IMediator mediator,
-        ILoggerManager logger,
+        ILoggerService logger,
         IValidator<RegisterUserRequest> registerValidator,
         IValidator<LoginUserRequest> loginValidator) : base(mediator, logger)
     {
@@ -36,9 +28,9 @@ public class AuthController : BaseApiController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Produces("application/json")]
     [Consumes("application/json")]
-    public async Task<IActionResult> RegisterUser([FromBody]
-     RegisterUserRequest userToCreate,
-     CancellationToken cancellationToken = new())
+    public async Task<IActionResult> RegisterUser(
+        [FromBody] RegisterUserRequest userToCreate,
+        CancellationToken cancellationToken = new())
     {
         var validationResult = await _registerValidator.ValidateAsync(userToCreate, cancellationToken);
         if (!validationResult.IsValid)
@@ -51,9 +43,11 @@ public class AuthController : BaseApiController
                 ));
 
         var result = await _mediator.Send(new RegisterUserCommand(userToCreate), cancellationToken);
+
         return !result.Data.Succeeded ?
                 BadRequest(result) :
-                Ok(new { message = "Usuario registrado con éxito.", result });
+                CreatedAtAction(
+                "RegisterUser", result.Message = "Usuario registrado con éxito.", result);
     }
 
 
@@ -67,9 +61,9 @@ public class AuthController : BaseApiController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Produces("application/json")]
     [Consumes("application/json")]
-    public async Task<ActionResult<AuthenticateResponse>> Authenticate([FromBody]
-     LoginUserRequest loginUserRequest,
-     CancellationToken cancellationToken = new())
+    public async Task<ActionResult<AuthenticateResponse>> Authenticate(
+        [FromBody] LoginUserRequest loginUserRequest,
+        CancellationToken cancellationToken = new())
     {
         var validationResult = await _loginValidator.ValidateAsync(loginUserRequest, cancellationToken);
         if (!validationResult.IsValid)
@@ -83,9 +77,12 @@ public class AuthController : BaseApiController
 
         var result = await _mediator.Send(new LoginUserCommand(loginUserRequest), cancellationToken);
         SetTokenCookie(result.Data.RefreshToken);
-        return !result.Succeeded ?
-                BadRequest(result) :
-                Ok(new { message = "Inicio de sesión exitoso.", result });
+
+        if (!result.Succeeded)
+            return BadRequest(result);
+
+        result.Message = "Inicio de sesión exitoso.";
+        return Ok(result);
     }
 
 
@@ -98,14 +95,18 @@ public class AuthController : BaseApiController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Produces("application/json")]
     [Consumes("application/json")]
-    public async Task<ActionResult<AuthenticateResponse>> NewTokens(CancellationToken cancellationToken = new())
+    public async Task<ActionResult<AuthenticateResponse>> NewTokens(
+        CancellationToken cancellationToken = new())
     {
         var refreshToken = Request.Cookies["refreshToken"];
         var result = await _mediator.Send(new NewTokenCommand(refreshToken), cancellationToken);
         SetTokenCookie(result.Data.RefreshToken);
-        return !result.Succeeded ?
-                BadRequest(result) :
-                Ok(new { message = "Nuevo token generado con éxito.", result });
+
+        if (!result.Succeeded)
+            return BadRequest(result);
+
+        result.Message = "Nuevo token generado con éxito.";
+        return Ok(result);
     }
 
 
@@ -118,14 +119,19 @@ public class AuthController : BaseApiController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Produces("application/json")]
     [Consumes("application/json")]
-    public async Task<IActionResult> RevokerRefreshToken(RevokeTokenRequest request, CancellationToken cancellationToken = new())
+    public async Task<IActionResult> RevokerRefreshToken(
+        RevokeTokenRequest request,
+        CancellationToken cancellationToken = new())
     {
         // Acepta un refresh token en el cuerpo de la petición o en una cookie.
         var token = request.Token ?? Request.Cookies["refreshToken"];
         var result = await _mediator.Send(new RebokeTokenCommand(token), cancellationToken);
-        return !result.Succeeded ?
-                BadRequest(result) :
-                Ok(new { message = "Token revocado con éxito.", result });
+
+        if (!result.Succeeded)
+            return BadRequest(result);
+
+        result.Message = "Token revocado con éxito.";
+        return Ok(result);
     }
 
 

@@ -1,8 +1,3 @@
-using Application.Commands.Auth;
-using Application.Common.Models;
-using MediatR;
-using Microsoft.AspNetCore.Identity;
-
 namespace Application.Common.Interfaces;
 
 public interface IUserAuthenticationService
