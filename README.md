@@ -1,5 +1,5 @@
 # Proyecto De Microservicios
-Consiste en el backend de 3 microservicios desarrollados en .Net (Catalog, Favorite List e Identity) corriendo por detrás de una API Gateway construida con Ocelot.
+Backend de una lista de favoritos. Similar a una WishList. Consta de 3 microservicios desarrollados en .Net (Catalog, Favorite List e Identity) corriendo por detrás de una API Gateway construida con Ocelot, RabbitMQ como message broker y Mass Transit como distributed application framework.
 
 
 # Descripción General
